@@ -56,9 +56,9 @@ struct LedState {
     static const uint8_t AVAILABLE_MODES = 6;
 
     static unsigned long getTimeoutSeconds(LedMode mode, bool extended = false) {
-        if (mode == LedMode::Torch) return extended ? (10 * 60) : (5 * 60);
+        if (mode == LedMode::Torch) return extended ? (20 * 60) : (10 * 60);
         if (mode == LedMode::Black) return 20;
-        return extended ? (30 * 60) : (3 * 60);
+        return extended ? (45 * 60) : (5 * 60);
     }
 };
 

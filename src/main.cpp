@@ -92,7 +92,7 @@ void setup() {
 
     btn.onPressed(onPress);
     btn.onSequence(2, 200, onDoublePress);
-    btn.onPressedFor(1500, onLongPress);
+    btn.onPressedFor(1000, onLongPress);
     interaction();
 }
 
