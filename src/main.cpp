@@ -111,12 +111,9 @@ void loop() {
         case LedState::GenderqueerFlag:
             setLedsFromArray(ledutils::GenderqueerFlag);
             break;
-        case LedState::LgbtFlag:
-            setLedsFromArray(ledutils::LgbtFlag);
-            break;
         case LedState::Rainbow:
-            // TODO: Rotating rainbow
-            for (auto &led: leds)led = CRGB::Blue;
+            // millis() / X <- X dictates speed
+            ledutils::rainbow(leds, NUM_LEDS, (millis() / 18) % 255);
             break;
         case LedState::Red:
             for (auto &led: leds)led = CRGB::Red;

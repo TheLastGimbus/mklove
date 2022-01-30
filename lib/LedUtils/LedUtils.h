@@ -31,28 +31,29 @@ namespace ledutils {
              Purple, Purple, Purple, CRGB::White, CRGB::Green};
 
     // RED, ORANGE, YELLOW, GREEN, BLUE
+    // Not used since we already have rainbow below
     static CRGB LgbtFlag[NUM_LEDS] =
             {CRGB::Blue, CRGB::Green, CRGB::Yellow, Orange, CRGB::Red,
              Orange, CRGB::Red, Orange, CRGB::Yellow, CRGB::Green};
-    // HSV -> 255/10=22,5 -> keep adding 22,5 until 255
-    // Not used since we already have lgbt above that looks nice
-    static CRGB Rainbow[NUM_LEDS] = {CHSV(0, 255, 255), CHSV(25, 255, 255), CHSV(51, 255, 255), CHSV(76, 255, 255),
-                                     CHSV(102, 255, 255), CHSV(127, 255, 255), CHSV(153, 255, 255), CHSV(178, 255, 255),
-                                     CHSV(204, 255, 255), CHSV(229, 255, 255)};
+
+    // Rotating rainbow
+    /// Fills leds array with rainbow colors, with rotation set by progress
+    void rainbow(CRGB *leds, uint8_t numLeds, uint8_t progress) {
+        for (int i = 0; i < numLeds; i++) leds[i] = CHSV(i * 255 / numLeds + progress, 255, 255);
+    }
 }
 
 
 struct LedState {
     typedef enum {
-        TransFlag = 0,
-        GenderqueerFlag = 1,
-        LgbtFlag = 2,
-        Rainbow = 3,
-        Red = 4,
-        Torch = 5,
-        Black = 6,
+        TransFlag,
+        GenderqueerFlag,
+        Rainbow,
+        Red,
+        Torch,
+        Black,
     } LedMode;
-    static const uint8_t AVAILABLE_MODES = 7;
+    static const uint8_t AVAILABLE_MODES = 6;
 
     static unsigned long getTimeoutSeconds(LedMode mode, bool extended = false) {
         if (mode == LedMode::Torch) return extended ? (10 * 60) : (5 * 60);
