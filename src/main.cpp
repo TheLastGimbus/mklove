@@ -115,8 +115,8 @@ void loop() {
             // millis() / X <- X dictates speed
             ledutils::rainbow(leds, NUM_LEDS, (millis() / 18) % 255);
             break;
-        case LedState::Red:
-            for (auto &led: leds)led = CRGB::Red;
+        case LedState::Pink:
+            for (auto &led: leds)led = ledutils::Pink;
             break;
         case LedState::Torch:
             for (auto &led: leds)led = CRGB::White;

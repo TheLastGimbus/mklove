@@ -13,6 +13,7 @@ namespace ledutils {
         TransBlue = 0x000aff,
         TransPink = 0xff0a82,
         Orange = 0xff3300,
+        Pink = 0xff1010,
         Purple = 0x6600ff,
     } Colors;
     // BLUE, PINK, WHITE, PINK, BLUE
@@ -56,7 +57,7 @@ struct LedState {
         TransFlag,
         GenderqueerFlag,
         Rainbow,
-        Red,
+        Pink,
         Torch,
         RedBlink,
         Black,
