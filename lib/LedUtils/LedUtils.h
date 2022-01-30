@@ -36,11 +36,18 @@ namespace ledutils {
             {CRGB::Blue, CRGB::Green, CRGB::Yellow, Orange, CRGB::Red,
              Orange, CRGB::Red, Orange, CRGB::Yellow, CRGB::Green};
 
-    // Rotating rainbow
     /// Fills leds array with rainbow colors, with rotation set by progress
     void rainbow(CRGB *leds, uint8_t numLeds, uint8_t progress) {
         for (int i = 0; i < numLeds; i++) leds[i] = CHSV(i * 255 / numLeds + progress, 255, 255);
     }
+
+    /// Blinks in rhythm of heartbeat (XoXoooooooXoXooooooo.. you get it)
+    void redBlink(CRGB *leds, uint8_t numLeds, uint8_t progress) {
+        for (int i = 0; i < numLeds; i++) {
+            leds[i] = (progress < 30 || (progress > 60 && progress < 90)) ? CRGB::Red : CRGB::Black;
+        }
+    }
+
 }
 
 
@@ -51,13 +58,15 @@ struct LedState {
         Rainbow,
         Red,
         Torch,
+        RedBlink,
         Black,
     } LedMode;
-    static const uint8_t AVAILABLE_MODES = 6;
+    static const uint8_t AVAILABLE_MODES = 7;
 
     static unsigned long getTimeoutSeconds(LedMode mode, bool extended = false) {
         if (mode == LedMode::Torch) return extended ? (20 * 60) : (10 * 60);
         if (mode == LedMode::Black) return 20;
+        if (mode == LedMode::RedBlink) return extended ? (90 * 60) : (45 * 60);
         return extended ? (45 * 60) : (5 * 60);
     }
 };

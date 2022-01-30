@@ -122,6 +122,10 @@ void loop() {
             for (auto &led: leds)led = CRGB::White;
             brightness = 255;
             break;
+        case LedState::RedBlink:
+            ledutils::redBlink(leds, NUM_LEDS, (millis() / 7) % 255);
+            brightness = 255;
+            break;
         case LedState::Black:
         default:
             for (auto &led: leds)led = CRGB::Black;
