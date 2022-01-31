@@ -41,7 +41,7 @@ void wake() {
 
 void _preSleep() {
     digitalWrite(LED_BUILTIN, LOW);
-    digitalWrite(PIN_LEDS, HIGH);
+    pinMode(PIN_LEDS, INPUT_PULLUP);
     digitalWrite(PIN_MOSFET, LOW);
 }
 
@@ -79,11 +79,12 @@ void onLongPress() {
 
 
 void setup() {
+    detachInterrupt(0);
     pinMode(LED_BUILTIN, OUTPUT);
     pinMode(PIN_LEDS, OUTPUT);
     pinMode(PIN_MOSFET, OUTPUT);
     btn.begin();
-    detachInterrupt(0);
+    ADCSRA = 0;  // disable ADC
 
     digitalWrite(LED_BUILTIN, HIGH);            // sets the LED on
     digitalWrite(PIN_MOSFET, HIGH);            // gives LEDs power
