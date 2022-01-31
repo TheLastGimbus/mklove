@@ -5,8 +5,6 @@
 #include <LedUtils.h>
 #include <EasyButton.h>
 
-#define DEBUG 1
-
 #define PIN_BTN 2
 #define PIN_LEDS 0
 #define PIN_MOSFET 1
@@ -67,9 +65,6 @@ void onPress() {
 
 void onDoublePress() {
     interaction();
-#if DEBUG
-    reboot();
-#endif
 }
 
 void onLongPress() {
@@ -98,9 +93,7 @@ void setup() {
 }
 
 void setLedsFromArray(CRGB array[NUM_LEDS]) {
-    for (int i = 0; i < NUM_LEDS; i++) {
-        leds[i] = array[i];
-    }
+    for (int i = 0; i < NUM_LEDS; i++) leds[i] = array[i];
 }
 
 void loop() {
@@ -113,7 +106,7 @@ void loop() {
             setLedsFromArray(ledutils::GenderqueerFlag);
             break;
         case LedState::Rainbow:
-            // millis() / X <- X dictates speed
+            // millis() / X <- X dictates speed - lower is faster
             ledutils::rainbow(leds, NUM_LEDS, (millis() / 18) % 255);
             break;
         case LedState::Pink:
@@ -124,7 +117,8 @@ void loop() {
             brightness = 255;
             break;
         case LedState::RedBlink:
-            ledutils::redBlink(leds, NUM_LEDS, (millis() / 7) % 255);
+            // same case as for rainbow
+            ledutils::redBlink(leds, NUM_LEDS, (millis() / 5) % 255);
             brightness = 255;
             break;
         case LedState::Black:
