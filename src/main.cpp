@@ -4,6 +4,7 @@
 #include "FastLED.h"
 #include <LedUtils.h>
 #include <EasyButton.h>
+#include <PowerUtils.h>
 
 #define PIN_BTN 2
 #define PIN_LEDS 0
@@ -15,21 +16,14 @@ EasyButton btn(PIN_BTN, 35, false, true);
 CRGB leds[NUM_LEDS];
 
 // State management
-uint8_t currentState = 0;
+int8_t currentState = 0;
 bool lowPowerLongTime = false;
+/// From 0 to 10
+uint8_t batteryLevel = 5;
 
 unsigned long lastInteraction = 0;
 
 void interaction() { lastInteraction = millis(); }
-
-void reboot() {
-    noInterrupts(); // disable interrupts which could mess with changing prescaler
-    CLKPR = 0b10000000; // enable prescaler speed change
-    CLKPR = 0; // set prescaler to default (16mhz) mode required by bootloader
-    void (*ptrToFunction)(); // allocate a function pointer
-    ptrToFunction = 0x0000; // set function pointer to bootloader reset vector
-    (*ptrToFunction)(); // jump to reset, which bounces in to bootloader
-}
 
 void wake() {
     detachInterrupt(0);
@@ -38,6 +32,7 @@ void wake() {
 }
 
 void _preSleep() {
+    ADCSRA = 0;
     digitalWrite(LED_BUILTIN, LOW);
     pinMode(PIN_LEDS, INPUT_PULLUP);
     digitalWrite(PIN_MOSFET, LOW);
@@ -121,6 +116,9 @@ void loop() {
             ledutils::redBlink(leds, NUM_LEDS, (millis() / 5) % 255);
             brightness = 255;
             break;
+        case LedState::Battery:
+            for (int i = 0; i < NUM_LEDS; i++) leds[i] = i < batteryLevel ? CRGB::Red : CRGB::Black;
+            break;
         case LedState::Black:
         default:
             for (auto &led: leds)led = CRGB::Black;
@@ -130,6 +128,19 @@ void loop() {
     FastLED.show();
 
     btn.read();
+    // because multiple onPressedFor don't work :/
+    if(btn.pressedFor(3000)){
+        currentState = LedState::Battery;
+    }
+
+    EVERY_N_SECONDS(1) {
+        ADCSRA = 1;
+        batteryLevel = map(getVcc(), 3000, 4200, 0, NUM_LEDS);
+        ADCSRA = 0;
+    }
+    EVERY_N_MINUTES(3){
+        if(batteryLevel <= 2) currentState = LedState::Battery;
+    }
 
     unsigned long timeout =
             LedState::getTimeoutSeconds(static_cast<LedState::LedMode>(currentState), lowPowerLongTime) * 1000;

@@ -53,7 +53,11 @@ namespace ledutils {
 
 
 struct LedState {
+    /// Modes that are below 0 are kinda special mode
+    /// User should not get into them with normal button click - it should be a very long press or something
+    /// Then, you can go out of them by pressing forward until you get to 0 (first normal one) etc
     typedef enum {
+        Battery = -1,
         TransFlag,
         GenderqueerFlag,
         Rainbow,
@@ -62,6 +66,7 @@ struct LedState {
         RedBlink,
         Black,
     } LedMode;
+    /// Normal, non-special modes
     static const uint8_t AVAILABLE_MODES = 7;
 
     static unsigned long getTimeoutSeconds(LedMode mode, bool extended = false) {
