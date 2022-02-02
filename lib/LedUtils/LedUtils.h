@@ -5,9 +5,6 @@
 
 #define NUM_LEDS 10
 
-CRGB TransBlue = 0x000aff;
-CRGB TransPink = 0xff0a82;
-
 namespace ledutils {
     typedef enum {
         TransBlue = 0x000aff,
@@ -16,26 +13,33 @@ namespace ledutils {
         Pink = 0xff1010,
         Purple = 0x6600ff,
     } Colors;
-    // BLUE, PINK, WHITE, PINK, BLUE
-    static CRGB TransFlag[NUM_LEDS] =
-            {TransBlue, TransPink, CRGB::White, TransPink, TransBlue,
-             TransPink, TransBlue, TransPink, CRGB::White, TransPink};
+
+    void flag(CRGB *leds, CRGB firstRow, CRGB secondRow, CRGB thirdRow, CRGB fourthRow, CRGB fifthRow) {
+        leds[6] = leds[4] = firstRow;
+        leds[7] = leds[5] = leds[3] = secondRow;
+        leds[2] = leds[8] = thirdRow;
+        leds[1] = leds[9] = fourthRow;
+        leds[0] = fifthRow;
+    }
+
+    void transFlag(CRGB *leds) { flag(leds, TransBlue, TransPink, CRGB::White, TransPink, TransBlue); }
+
     // YELLOW, WHITE, VIOLET, BLACK
     // Ugly as fuck, do not use
-    static CRGB NonbinaryFlag[NUM_LEDS] =
-            {CRGB::DarkGray, CRGB::Black, CRGB::Purple, CRGB::White, CRGB::Yellow,
-             CRGB::White, CRGB::Yellow, CRGB::White, CRGB::Purple, CRGB::Black};
+    void nonbinaryFlag(CRGB *leds) {
+        flag(leds, CRGB::Black, CRGB::Yellow, CRGB::White, CRGB::Violet, CRGB::Black);
+    }
 
     // PURPLE, WHITE, GREEN
-    static CRGB GenderqueerFlag[NUM_LEDS] =
-            {CRGB::Green, CRGB::Green, CRGB::White, Purple, Purple,
-             Purple, Purple, Purple, CRGB::White, CRGB::Green};
+    void genderqueerFlag(CRGB *leds) {
+        flag(leds, CRGB::Purple, CRGB::Purple, CRGB::White, CRGB::Green, CRGB::Green);
+    }
 
     // RED, ORANGE, YELLOW, GREEN, BLUE
     // Not used since we already have rainbow below
-    static CRGB LgbtFlag[NUM_LEDS] =
-            {CRGB::Blue, CRGB::Green, CRGB::Yellow, Orange, CRGB::Red,
-             Orange, CRGB::Red, Orange, CRGB::Yellow, CRGB::Green};
+    void lgbtFlag(CRGB *leds) {
+        flag(leds, CRGB::Red, CRGB::Orange, CRGB::Yellow, CRGB::Green, CRGB::Blue);
+    }
 
     /// Fills leds array with rainbow colors, with rotation set by progress
     void rainbow(CRGB *leds, uint8_t numLeds, uint8_t progress) {

@@ -95,10 +95,10 @@ void loop() {
     uint8_t brightness = 30;
     switch (currentState) {
         case LedState::TransFlag:
-            setLedsFromArray(ledutils::TransFlag);
+            ledutils::transFlag(leds);
             break;
         case LedState::GenderqueerFlag:
-            setLedsFromArray(ledutils::GenderqueerFlag);
+            ledutils::genderqueerFlag(leds);
             break;
         case LedState::Rainbow:
             // millis() / X <- X dictates speed - lower is faster
