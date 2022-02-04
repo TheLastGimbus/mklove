@@ -15,6 +15,10 @@ void reboot() {
     (*ptrToFunction)(); // jump to reset, which bounces in to bootloader
 }
 
+void disableAdc() { ADCSRA &= ~_BV(ADEN); }
+
+void enableAdc() { ADCSRA |= _BV(ADEN); }
+
 int getVcc() {
     //reads internal 1V1 reference against VCC
 #if defined(__AVR_ATtiny84__) || defined(__AVR_ATtiny44__)
