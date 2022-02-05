@@ -10,7 +10,7 @@
 #define PIN_LEDS 0
 #define PIN_MOSFET 1
 
-EasyButton btn(PIN_BTN, 35, false, true);
+EasyButton btn(PIN_BTN, 150, false, true);
 
 #define NUM_LEDS 10
 CRGB leds[NUM_LEDS];
