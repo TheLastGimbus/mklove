@@ -114,7 +114,7 @@ void loop() {
             ledutils::transFlag(leds);
             break;
         case LedState::Green:
-            for (auto &led: leds)led = CRGB::Green;
+            fill_solid(leds, NUM_LEDS, CRGB::Green);
             break;
         case LedState::GenderqueerFlag:
             ledutils::genderqueerFlag(leds);
@@ -124,15 +124,15 @@ void loop() {
             ledutils::rainbow(leds, NUM_LEDS, (millis() / 18) % 255);
             break;
         case LedState::Pink:
-            for (auto &led: leds)led = ledutils::Pink;
+            fill_solid(leds, NUM_LEDS, ledutils::Pink);
             break;
         case LedState::Torch:
-            for (auto &led: leds)led = CRGB::White;
+            fill_solid(leds, NUM_LEDS, CRGB::White);
             brightness = 255;
             break;
         case LedState::RedBlink:
             // same case as for rainbow
-            ledutils::redBlink(leds, NUM_LEDS, (millis() / 5) % 255);
+            ledutils::redBlink(leds, (millis() / 5) % 255);
             brightness = 255;
             break;
         case LedState::Battery:
@@ -140,7 +140,7 @@ void loop() {
             break;
         case LedState::Black:
         default:
-            for (auto &led: leds)led = CRGB::Black;
+            fill_solid(leds, NUM_LEDS, CRGB::Black);
             break;
     }
     FastLED.setBrightness(extendedMode ? brightness / 10 : brightness);
