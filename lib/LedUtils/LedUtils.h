@@ -57,7 +57,7 @@ namespace ledutils {
 
     /// Blinks in rhythm of heartbeat (XoXoooooooXoXooooooo.. you get it)
     void redBlink(CRGB *leds, uint8_t progress) {
-        fill_solid(leds, NUM_LEDS, (progress < 30 || (progress > 60 && progress < 90)) ? CRGB::Red : CRGB::Black);
+        fill_solid(leds, NUM_LEDS, (progress < 35 || (progress > 70 && progress < 105)) ? CRGB::Red : CRGB::Black);
     }
 
     void batteryIndicator(CRGB *leds, uint8_t batteryLevel) {
