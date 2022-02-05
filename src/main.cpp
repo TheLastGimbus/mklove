@@ -17,7 +17,8 @@ CRGB leds[NUM_LEDS];
 
 // State management
 int8_t currentState = 0;
-bool lowPowerLongTime = false;
+/// Lower brightness, but longer timeout
+bool extendedMode = true;  // This is because main use-case will probably at night
 /// From 0 to 10
 uint8_t batteryLevel = 5;
 long lastBattery = 5000;
@@ -84,7 +85,7 @@ void onPress() {
 
 void onLongPress() {
     interaction();
-    lowPowerLongTime = !lowPowerLongTime;
+    extendedMode = !extendedMode;
 }
 
 
@@ -139,7 +140,7 @@ void loop() {
             for (auto &led: leds)led = CRGB::Black;
             break;
     }
-    FastLED.setBrightness(lowPowerLongTime ? brightness / 10 : brightness);
+    FastLED.setBrightness(extendedMode ? brightness / 10 : brightness);
     FastLED.show();
 
     btn.read();
@@ -173,7 +174,7 @@ void loop() {
     }
 
     if ((millis() - lastInteraction >
-         LedState::getTimeoutSeconds(static_cast<LedState::LedMode>(currentState), lowPowerLongTime) * 1000)) {
+         LedState::getTimeoutSeconds(static_cast<LedState::LedMode>(currentState), extendedMode) * 1000)) {
         sleepNow();
     }
 }

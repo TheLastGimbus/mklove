@@ -86,21 +86,24 @@ namespace ledutils {
 
 
 struct LedState {
-    /// Modes that are below 0 are kinda special mode
+    /// Modes that are below 0 are a-bit-special modes
     /// User should not get into them with normal button click - it should be a very long press or something
     /// Then, you can go out of them by pressing forward until you get to 0 (first normal one) etc
+    ///
+    /// Reason for all of this, is that the heart should be quick to use - as a night-light or torch
+    /// - you don't want to scroll thorough lgbt flags when you just want quick light
     typedef enum {
-        Battery = -1,
-        TransFlag,
-        GenderqueerFlag,
-        Rainbow,
+        Battery = -5,
+        TransFlag = -4,
+        GenderqueerFlag = -3,
+        Rainbow = -2,
+        RedBlink = -1,
         Pink,
         Torch,
-        RedBlink,
         Black,
     } LedMode;
     /// Normal, non-special modes
-    static const uint8_t AVAILABLE_MODES = 7;
+    static const uint8_t AVAILABLE_MODES = 3;
 
     static unsigned long getTimeoutSeconds(LedMode mode, bool extended = false) {
         if (mode == LedMode::Torch) return extended ? (20 * 60) : (10 * 60);
