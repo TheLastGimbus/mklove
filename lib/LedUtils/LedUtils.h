@@ -93,8 +93,9 @@ struct LedState {
     /// Reason for all of this, is that the heart should be quick to use - as a night-light or torch
     /// - you don't want to scroll thorough lgbt flags when you just want quick light
     typedef enum {
-        Battery = -5,
-        TransFlag = -4,
+        Battery = -6,
+        TransFlag = -5,
+        Green = -4,
         GenderqueerFlag = -3,
         Rainbow = -2,
         RedBlink = -1,

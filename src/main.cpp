@@ -113,6 +113,9 @@ void loop() {
         case LedState::TransFlag:
             ledutils::transFlag(leds);
             break;
+        case LedState::Green:
+            for (auto &led: leds)led = CRGB::Green;
+            break;
         case LedState::GenderqueerFlag:
             ledutils::genderqueerFlag(leds);
             break;
