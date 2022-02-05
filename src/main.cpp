@@ -68,8 +68,10 @@ void sleepNow() {
     _preSleep();
 
     attachInterrupt(0, wake, LOW);
+    noInterrupts();  // This should (?) make it more reliable ??
     set_sleep_mode(SLEEP_MODE_PWR_DOWN);
     sleep_enable();
+    interrupts();
     sleep_cpu();
     sleep_disable();
     detachInterrupt(0);
