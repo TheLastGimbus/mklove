@@ -22,6 +22,15 @@ namespace ledutils {
         leds[0] = fifthRow;
     }
 
+    void mirror(CRGB *leds, CRGB *sixColors) {
+        leds[0] = sixColors[0];
+        leds[1] = leds[9] = sixColors[1];
+        leds[2] = leds[8] = sixColors[2];
+        leds[3] = leds[7] = sixColors[3];
+        leds[4] = leds[6] = sixColors[4];
+        leds[5] = sixColors[5];
+    }
+
     void transFlag(CRGB *leds) { flag(leds, TransBlue, TransPink, CRGB::White, TransPink, TransBlue); }
 
     // YELLOW, WHITE, VIOLET, BLACK
@@ -51,6 +60,26 @@ namespace ledutils {
         for (int i = 0; i < numLeds; i++) {
             leds[i] = (progress < 30 || (progress > 60 && progress < 90)) ? CRGB::Red : CRGB::Black;
         }
+    }
+
+    void batteryIndicator(CRGB *leds, uint8_t batteryLevel) {
+        for (int i = 0; i < NUM_LEDS; i++) leds[i] = i <= batteryLevel ? CRGB::Red : CRGB::Black;
+    }
+
+    // This is cool, but requires stable batteryLevel (some median done) and uses *precious memory*
+    void batteryIndicatorAnimation(CRGB *leds, uint8_t batteryLevel, uint8_t progress) {
+        uint8_t simpleLevel = batteryLevel / 2;
+        for (int i = 0; i < NUM_LEDS; i++) leds[i] = (i < simpleLevel) ? CRGB::Red : CRGB::Black;
+        if (batteryLevel % 2 && simpleLevel <= NUM_LEDS - 1) {
+            leds[simpleLevel + 1] = (progress > 255 / 2) ? CRGB::Red : CRGB::Black;
+        }
+    }
+
+    void chargingStartAnimation(CRGB *leds, uint8_t progress) {
+        CRGB arr[6] = {};
+        uint8_t ledsToLight = map(progress, 0, 255, 0, 7);
+        for (int i = 0; i < ledsToLight; i++) arr[i] = CRGB::Red;
+        mirror(leds, arr);
     }
 
 }

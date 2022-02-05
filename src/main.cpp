@@ -20,10 +20,34 @@ int8_t currentState = 0;
 bool lowPowerLongTime = false;
 /// From 0 to 10
 uint8_t batteryLevel = 5;
+long lastBattery = 5000;
+#define BATTERY_INCREASE_CHARGING_THRESHOLD 80  // This may be very subjective of battery capacity and level :/
 
 unsigned long lastInteraction = 0;
 
 void interaction() { lastInteraction = millis(); }
+
+/// Updates battery level
+/// Returns true if was plugged in to charger (one time)
+bool updateBattery() {
+    long battery = getVcc();
+    batteryLevel = map(battery, 3000, 4200, 0, NUM_LEDS - 1);
+    if ((battery - lastBattery) > BATTERY_INCREASE_CHARGING_THRESHOLD) {
+        lastBattery = battery;
+        return true;
+    } else {
+        lastBattery = battery;
+        return false;
+    }
+}
+
+void playChargingAnimationBlocking() {
+    for (uint8_t i = 0; i < 255; i++) {
+        ledutils::chargingStartAnimation(leds, i);
+        FastLED.show();
+        delay(7);
+    }
+}
 
 void wake() {
     detachInterrupt(0);
@@ -32,7 +56,7 @@ void wake() {
 }
 
 void _preSleep() {
-    ADCSRA = 0;
+    disableAdc();
     digitalWrite(LED_BUILTIN, LOW);
     pinMode(PIN_LEDS, INPUT_PULLUP);
     digitalWrite(PIN_MOSFET, LOW);
@@ -58,10 +82,6 @@ void onPress() {
     if (currentState >= LedState::AVAILABLE_MODES) currentState = 0;
 }
 
-void onDoublePress() {
-    interaction();
-}
-
 void onLongPress() {
     interaction();
     lowPowerLongTime = !lowPowerLongTime;
@@ -74,7 +94,7 @@ void setup() {
     pinMode(PIN_LEDS, OUTPUT);
     pinMode(PIN_MOSFET, OUTPUT);
     btn.begin();
-    ADCSRA = 0;  // disable ADC
+    disableAdc();
 
     digitalWrite(LED_BUILTIN, HIGH);            // sets the LED on
     digitalWrite(PIN_MOSFET, HIGH);            // gives LEDs power
@@ -82,13 +102,8 @@ void setup() {
     FastLED.addLeds<WS2812B, PIN_LEDS, GRB>(leds, NUM_LEDS);
 
     btn.onPressed(onPress);
-    btn.onSequence(2, 200, onDoublePress);
-    btn.onPressedFor(1000, onLongPress);
+    btn.onPressedFor(500, onLongPress);
     interaction();
-}
-
-void setLedsFromArray(CRGB array[NUM_LEDS]) {
-    for (int i = 0; i < NUM_LEDS; i++) leds[i] = array[i];
 }
 
 void loop() {
@@ -117,7 +132,7 @@ void loop() {
             brightness = 255;
             break;
         case LedState::Battery:
-            for (int i = 0; i < NUM_LEDS; i++) leds[i] = i < batteryLevel ? CRGB::Red : CRGB::Black;
+            ledutils::batteryIndicator(leds, batteryLevel);
             break;
         case LedState::Black:
         default:
@@ -129,23 +144,36 @@ void loop() {
 
     btn.read();
     // because multiple onPressedFor don't work :/
-    if(btn.pressedFor(3000)){
+    if (btn.pressedFor(1500)) {
+        enableAdc();
+        // Show the indicator and update battery - may prevent false-positive trigger (of charging animation)
+        // because of jump in power usage
+        ledutils::batteryIndicator(leds, batteryLevel);
+        FastLED.show();
+        delay(10);
+        updateBattery();
         currentState = LedState::Battery;
     }
 
-    EVERY_N_SECONDS(1) {
-        ADCSRA = 1;
-        batteryLevel = map(getVcc(), 3000, 4200, 0, NUM_LEDS);
-        ADCSRA = 0;
+    // If state==battery, update lvl every loop (sometimes gives nice "flickering" effect) - else, only every 10s
+    if (currentState == LedState::Battery) {
+        if (updateBattery()) playChargingAnimationBlocking();
+    } else {
+        EVERY_N_SECONDS(10) {
+            enableAdc();
+            // There was an idea to also play animation + set currentState=Battery
+            // But turned out that power jumps while switching from "Torch" to anything else can also trigger this :/
+            updateBattery();
+            disableAdc();
+        }
     }
-    EVERY_N_MINUTES(3){
-        if(batteryLevel <= 2) currentState = LedState::Battery;
+    // If battery is low, show it to the user every 3 minutes
+    EVERY_N_MINUTES(3) {
+        if (batteryLevel <= 2) currentState = LedState::Battery;
     }
 
-    unsigned long timeout =
-            LedState::getTimeoutSeconds(static_cast<LedState::LedMode>(currentState), lowPowerLongTime) * 1000;
-
-    if ((millis() - lastInteraction > timeout) && btn.releasedFor(5 * 1000)) {
+    if ((millis() - lastInteraction >
+         LedState::getTimeoutSeconds(static_cast<LedState::LedMode>(currentState), lowPowerLongTime) * 1000)) {
         sleepNow();
     }
 }
