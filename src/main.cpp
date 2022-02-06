@@ -9,6 +9,7 @@
 #define PIN_BTN 2
 #define PIN_LEDS 0
 #define PIN_MOSFET 1
+#define PIN_USB_PLUS 3
 
 EasyButton btn(PIN_BTN, 150, false, true);
 
@@ -21,8 +22,7 @@ int8_t currentState = 0;
 bool extendedMode = true;  // This is because main use-case will probably at night
 /// From 0 to 10
 uint8_t batteryLevel = 5;
-long lastBattery = 5000;
-#define BATTERY_INCREASE_CHARGING_THRESHOLD 80  // This may be very subjective of battery capacity and level :/
+bool isCharging = false;
 
 unsigned long lastInteraction = 0;
 
@@ -30,17 +30,7 @@ void interaction() { lastInteraction = millis(); }
 
 /// Updates battery level
 /// Returns true if was plugged in to charger (one time)
-bool updateBattery() {
-    long battery = getVcc();
-    batteryLevel = map(battery, 3000, 4200, 0, NUM_LEDS - 1);
-    if ((battery - lastBattery) > BATTERY_INCREASE_CHARGING_THRESHOLD) {
-        lastBattery = battery;
-        return true;
-    } else {
-        lastBattery = battery;
-        return false;
-    }
-}
+void updateBattery() { batteryLevel = map(getVcc(), 3000, 4200, 0, NUM_LEDS - 1); }
 
 void playChargingAnimationBlocking() {
     for (uint8_t i = 0; i < 255; i++) {
@@ -101,6 +91,7 @@ void setup() {
     pinMode(LED_BUILTIN, OUTPUT);
     pinMode(PIN_LEDS, OUTPUT);
     pinMode(PIN_MOSFET, OUTPUT);
+    pinMode(PIN_USB_PLUS, INPUT);
     btn.begin();
     disableAdc();
 
@@ -166,10 +157,19 @@ void loop() {
         currentState = LedState::Battery;
     }
 
+    // Note: exporting this to separate function takes 12 bytes (I know :O) so imma leave it here
+    // This is (I think) 100% reliable of detecting charging, instead of previous "check voltage jumps" method
+    bool _newCharging = digitalRead(PIN_USB_PLUS);
+    // Is charging but wasn't last time => started charging
+    if(_newCharging && !isCharging) {
+        currentState = LedState::Battery;
+        playChargingAnimationBlocking();
+    }
+    isCharging = _newCharging;
+
     // If state==battery, update lvl every loop (sometimes gives nice "flickering" effect) - else, only every 10s
-    if (currentState == LedState::Battery) {
-        if (updateBattery()) playChargingAnimationBlocking();
-    } else {
+    if (currentState == LedState::Battery) updateBattery();
+    else {
         EVERY_N_SECONDS(10) {
             enableAdc();
             // There was an idea to also play animation + set currentState=Battery
