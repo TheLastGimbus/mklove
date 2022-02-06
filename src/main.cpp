@@ -167,8 +167,10 @@ void loop() {
     // - but, my own implementation used pretty much the same
 
     // If state==battery, update lvl every loop (sometimes gives nice "flickering" effect) - else, only every 10s
-    if (currentState == LedState::Battery) updateBattery();
-    else {
+    if (currentState == LedState::Battery) {
+        enableAdc();
+        updateBattery();
+    } else {
         EVERY_N_SECONDS(10) {
             enableAdc();
             // There was an idea to also play animation + set currentState=Battery
