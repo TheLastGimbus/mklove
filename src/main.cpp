@@ -146,16 +146,7 @@ void loop() {
 
     btn.read();
     // because multiple onPressedFor don't work :/
-    if (btn.pressedFor(1500)) {
-        enableAdc();
-        // Show the indicator and update battery - may prevent false-positive trigger (of charging animation)
-        // because of jump in power usage
-        ledutils::batteryIndicator(leds, batteryLevel);
-        FastLED.show();
-        delay(10);
-        updateBattery();
-        currentState = LedState::Battery;
-    }
+    if (btn.pressedFor(1500)) currentState = LedState::Battery;
 
     // Note: exporting this to separate function takes 12 bytes (I know :O) so imma leave it here
     // This is (I think) 100% reliable of detecting charging, instead of previous "check voltage jumps" method
