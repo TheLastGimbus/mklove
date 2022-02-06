@@ -106,6 +106,8 @@ void setup() {
 }
 
 void loop() {
+    // This is *the big switch* that takes care of setting proper led colors according to "global state variables"
+    // (currentState, extendedMode, batteryLevel, isCharging) etc.
     uint8_t brightness = 30;
     switch (currentState) {
         case LedState::TransFlag:
@@ -145,18 +147,24 @@ void loop() {
     FastLED.show();
 
     btn.read();
-    // because multiple onPressedFor don't work :/
+
+    // If pressed *very* long, go to "special" modes
+    // Note: manual because multiple onPressedFor don't work :/
     if (btn.pressedFor(1500)) currentState = LedState::Battery;
 
     // Note: exporting this to separate function takes 12 bytes (I know :O) so imma leave it here
     // This is (I think) 100% reliable of detecting charging, instead of previous "check voltage jumps" method
+    // It is possible thanks to re-soldering R3 pull-up resistor directly to 5V form usb instead of global VCC
     bool _newCharging = digitalRead(PIN_USB_PLUS);
     // Is charging but wasn't last time => started charging
-    if(_newCharging && !isCharging) {
+    if (_newCharging && !isCharging) {
         currentState = LedState::Battery;
         playChargingAnimationBlocking();
     }
     isCharging = _newCharging;
+
+    // Comment: DAMN those "EVERY_N_" macros use a lot of flash :eyes:
+    // - but, my own implementation used pretty much the same
 
     // If state==battery, update lvl every loop (sometimes gives nice "flickering" effect) - else, only every 10s
     if (currentState == LedState::Battery) updateBattery();
@@ -174,6 +182,7 @@ void loop() {
         if (batteryLevel <= 2) currentState = LedState::Battery;
     }
 
+    // THIS IS *THE* THING that takes care of going to sleep - it's very important!
     if (millis() - lastInteraction >
         LedState::getTimeoutSeconds(static_cast<LedState::LedMode>(currentState), extendedMode) * 1000) {
         sleepNow();

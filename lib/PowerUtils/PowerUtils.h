@@ -1,6 +1,4 @@
-//
-// Created by matiii on 02.02.2022.
-//
+/// This is the file with utility functions for managing power
 
 #ifndef MKLOVE_POWERUTILS_H
 #define MKLOVE_POWERUTILS_H

@@ -1,3 +1,5 @@
+/// This file contains utilities for nice LED animations, as well as their state-management
+
 #ifndef MKLOVE_LEDUTILS_H
 #define MKLOVE_LEDUTILS_H
 
@@ -5,7 +7,13 @@
 
 #define NUM_LEDS 10
 
+/// This provides utilities for nice animations etc - all of them are standalone, don't do FastLED.show() by themselves
+/// They are dependent on NUM_LEDS tho
+///
+/// Any animations - instead of delay() - use `uint_8 progress` value
+/// - you can pass something like `(millis() / 10) % 255` in there
 namespace ledutils {
+    /// My own colors
     typedef enum {
         TransBlue = 0x000aff,
         TransPink = 0xff0a82,
@@ -83,6 +91,7 @@ namespace ledutils {
 }
 
 
+/// Here is some state-management
 struct LedState {
     /// Modes that are below 0 are a-bit-special modes
     /// User should not get into them with normal button click - it should be a very long press or something
