@@ -1,5 +1,5 @@
-# mklove
-...not war :heart:
+# mklove :sparkling_heart:
+...not war :broken_heart:
 
 Here lays the code for ATiny85 that powers `mklove` - cute little LED heart
 
