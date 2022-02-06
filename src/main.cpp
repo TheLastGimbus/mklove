@@ -139,7 +139,7 @@ void loop() {
             break;
         case LedState::RedBlink:
             // same case as for rainbow
-            ledutils::redBlink(leds, (millis() / 5) % 255);
+            ledutils::redBlink(leds, (millis() / 4) % 255);
             brightness = 255;
             break;
         case LedState::Battery:
@@ -183,8 +183,8 @@ void loop() {
         if (batteryLevel <= 2) currentState = LedState::Battery;
     }
 
-    if ((millis() - lastInteraction >
-         LedState::getTimeoutSeconds(static_cast<LedState::LedMode>(currentState), extendedMode) * 1000)) {
+    if (millis() - lastInteraction >
+        LedState::getTimeoutSeconds(static_cast<LedState::LedMode>(currentState), extendedMode) * 1000) {
         sleepNow();
     }
 }
