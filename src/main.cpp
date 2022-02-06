@@ -80,9 +80,14 @@ void sleepNow() {
 }
 
 void onPress() {
+    // If last press was >15 seconds ago - user probably wants to turn off instead of switching modes again
+    if (millis() - lastInteraction > 15 * 1000) {
+        currentState = LedState::Black;
+    } else {
+        currentState++;
+        if (currentState >= LedState::AVAILABLE_MODES) currentState = 0;
+    }
     interaction();
-    currentState++;
-    if (currentState >= LedState::AVAILABLE_MODES) currentState = 0;
 }
 
 void onLongPress() {
