@@ -44,4 +44,13 @@ int getVcc() {
     return ((long) 1024 * 1100) / val;
 }
 
+// Doesn't fit in flash :/
+uint8_t getLevelFromVoltage(uint16_t millivolts) {
+    double x = map(millivolts, 3000, 4200, 1, 100) / 100.0f;
+    // Goes very slowly when <3.7v, then linear
+    double curve = x < 0.5 ? (x * x * x) * 4 : x;
+    // from 0 to 9
+    return (uint8_t) (curve * 9);
+}
+
 #endif //MKLOVE_POWERUTILS_H
