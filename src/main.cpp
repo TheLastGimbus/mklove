@@ -7,8 +7,8 @@
 #include <PowerUtils.h>
 
 #define PIN_BTN 2
-#define PIN_LEDS 0
-#define PIN_MOSFET 1
+#define PIN_LEDS 1
+#define PIN_MOSFET 4
 #define PIN_USB_PLUS 3
 
 EasyButton btn(PIN_BTN, 150, false, true);
