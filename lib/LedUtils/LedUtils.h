@@ -101,9 +101,9 @@ struct LedState {
     /// - you don't want to scroll thorough lgbt flags when you just want quick light
     typedef enum {
         Battery = -6,
-        TransFlag = -5,
+        Blue = -5,
         Green = -4,
-        Blue = -3,
+        TransFlag = -3,
         Rainbow = -2,
         RedBlink = -1,
         Pink,
