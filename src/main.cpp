@@ -116,8 +116,8 @@ void loop() {
         case LedState::Green:
             fill_solid(leds, NUM_LEDS, CRGB::Green);
             break;
-        case LedState::GenderqueerFlag:
-            ledutils::genderqueerFlag(leds);
+        case LedState::Blue:
+            fill_solid(leds, NUM_LEDS, CRGB::Blue);
             break;
         case LedState::Rainbow:
             // millis() / X <- X dictates speed - lower is faster

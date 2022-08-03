@@ -103,7 +103,7 @@ struct LedState {
         Battery = -6,
         TransFlag = -5,
         Green = -4,
-        GenderqueerFlag = -3,
+        Blue = -3,
         Rainbow = -2,
         RedBlink = -1,
         Pink,
