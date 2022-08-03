@@ -108,7 +108,7 @@ void setup() {
 void loop() {
     // This is *the big switch* that takes care of setting proper led colors according to "global state variables"
     // (currentState, extendedMode, batteryLevel, isCharging) etc.
-    uint8_t brightness = 30;
+    uint8_t brightness = 50;
     switch (currentState) {
         case LedState::TransFlag:
             ledutils::transFlag(leds);
@@ -125,6 +125,7 @@ void loop() {
             break;
         case LedState::Pink:
             fill_solid(leds, NUM_LEDS, ledutils::Pink);
+            brightness = 30;
             break;
         case LedState::Torch:
             fill_solid(leds, NUM_LEDS, CRGB::White);
