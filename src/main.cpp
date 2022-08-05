@@ -188,7 +188,12 @@ void loop() {
     // THIS IS *THE* THING that takes care of going to sleep - it's very important!
     if (millis() - lastInteraction >
         LedState::getTimeoutSeconds(static_cast<LedState::LedMode>(currentState), extendedMode) * 1000) {
-        sleepNow();
+        if(currentState == LedState::Black) {
+            sleepNow();
+        } else {
+            currentState = LedState::Black;
+            interaction();
+        }
     }
 }
 
